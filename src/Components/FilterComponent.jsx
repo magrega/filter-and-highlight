@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from './FilterComponent.module.css';
 
 const items = [
     'Apple',
@@ -27,11 +28,14 @@ const items = [
     'Berry',
     'Apricot',
     'Banana Split'
-  ];
+];
 
 
 const FilterComponent = () => {
     const [search, setSearch] = useState('');
+    const [isDatalistActivated, setIsDatalistActivated] = useState(false);
+
+    const handleDatalistActivated = () => setIsDatalistActivated(prev => !prev);
 
     const findSearchedLetters = (word) => {
         if (!search || search === ' ') return word;
@@ -60,11 +64,15 @@ const FilterComponent = () => {
     return (
         <>
             <h1>Filter elements and highlight searched letters</h1>
-            <input type="text" placeholder="Start typing..." onChange={handleInputChange} />
+            <input list="item-list" type="text" placeholder="Start typing..." onChange={handleInputChange} />
+            <button onClick={handleDatalistActivated} className={isDatalistActivated ? `${styles['datalist-btn']} ${styles.activated}` : styles['datalist-btn']}>{isDatalistActivated ? "datalist on" : "datalist off"}</button>
             <p><strong>Item list</strong></p>
             <div className="item-list-div">
-                {filteredFruits.length === 0 ? <p>No results</p> : filteredFruits.map((fruit) => <p key={fruit}>{findSearchedLetters(fruit)}</p>)}
+                {isDatalistActivated ? <p>Filter turned off</p> : filteredFruits.length === 0 ? <p>No results</p> : filteredFruits.map((fruit) => <p key={fruit}>{findSearchedLetters(fruit)}</p>)}
             </div>
+            <datalist id="item-list">
+                {isDatalistActivated && search && items.map(item => <option value={item}/>)}
+            </datalist>
         </>
     )
 }
